@@ -9,23 +9,24 @@ use reqwest::{Body, StatusCode};
 /// An async client for sending the notification payload.
 pub struct Client {
     http_client: reqwest::Client,
+    project_id: String,
 }
 
 impl Default for Client {
     fn default() -> Self {
-        Self::new()
+        Self::new("".to_string())
     }
 }
 
 impl Client {
     /// Get a new instance of Client.
-    pub fn new() -> Client {
+    pub fn new(project_id: String) -> Client {
         let http_client = reqwest::ClientBuilder::new()
             .pool_max_idle_per_host(std::usize::MAX)
             .build()
             .unwrap();
 
-        Client { http_client }
+        Client { http_client, project_id }
     }
 
     /// Try sending a `Message` to FCM.
@@ -34,10 +35,10 @@ impl Client {
 
         let request = self
             .http_client
-            .post("https://fcm.googleapis.com/fcm/send")
+            .post(format!("https://fcm.googleapis.com/v1/projects/{}/messages:send", self.project_id))
             .header(CONTENT_TYPE, "application/json")
             .header(CONTENT_LENGTH, format!("{}", payload.len() as u64).as_bytes())
-            .header(AUTHORIZATION, format!("key={}", message.api_key).as_bytes())
+            .header(AUTHORIZATION, format!("Bearer {}", message.api_key).as_bytes())
             .body(Body::from(payload))
             .build()?;
         let response = self.http_client.execute(request).await?;
