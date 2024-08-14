@@ -15,6 +15,8 @@ pub enum Priority {
     High,
 }
 
+#[derive(Serialize, Debug, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Visibility {
     Unspecified,
     Private,
@@ -22,6 +24,8 @@ pub enum Visibility {
     Secret
 }
 
+#[derive(Serialize, Debug, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Proxy {
     Unspecified,
     Allow,
@@ -50,6 +54,7 @@ pub struct NotificationV2<'a> {
     image: Option<&'a str>
 }
 
+#[derive(Serialize, Debug, PartialEq)]
 pub struct LightSettings<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     light_on_duration: Option<&'a str>,
@@ -58,6 +63,7 @@ pub struct LightSettings<'a> {
     light_off_duration: Option<&'a str>,
 }
 
+#[derive(Serialize, Debug, PartialEq)]
 pub struct AndroidNotification<'a> { // new
     /// The notification's title.
     #[serde(skip_serializing_if = "Option::is_none")]
