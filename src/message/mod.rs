@@ -15,6 +15,166 @@ pub enum Priority {
     High,
 }
 
+pub enum Visibility {
+    Unspecified,
+    Private,
+    Public,
+    Secret
+}
+
+pub enum Proxy {
+    Unspecified,
+    Allow,
+    Deny,
+    IfPriorityLowered
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct NotificationV2<'a> {
+
+    /// The notification's title.
+    title: Option<&'a str>,
+
+    /// The notification's body text.
+    body: Option<&'a str>,
+
+    /// Contains the URL of an image that is going to be downloaded on the device and
+    /// displayed in a notification. JPEG, PNG, BMP have full support across platforms.
+    /// Animated GIF and video only work on iOS. WebP and HEIF have varying levels of
+    /// support across platforms and platform versions. Android has 1MB image size limit.
+    /// Quota usage and implications/costs for hosting image on Firebase Storage:
+    /// https://firebase.google.com/pricing
+    image: Option<&'a str>
+}
+
+pub struct LightSettings<'a> {
+    light_on_duration: Option<&'a str>,
+    light_off_duration: Option<&'a str>,
+}
+
+pub struct AndroidNotification<'a> { // new
+    /// The notification's title.
+    title: Option<&'a str>,
+
+    /// The notification's body text. If present, it will override
+    /// google.firebase.fcm.v1.Notification.body.
+    body: Option<&'a str>,
+
+    /// The notification's icon. Sets the notification icon to myicon for drawable
+    /// resource myicon. If you don't send this key in the request, FCM displays the
+    /// launcher icon specified in your app manifest.
+    icon: Option<&'a str>,
+
+    /// The notification's icon color, expressed in #rrggbb format.
+    color: Option<&'a str>,
+
+    /// The sound to play when the device receives the notification. Supports "default" or the
+    /// filename of a sound resource bundled in the app. Sound files must reside in /res/raw/.
+    sound: Option<&'a str>,
+
+    /// Identifier used to replace existing notifications in the notification drawer. If not
+    /// specified, each request creates a new notification. If specified and a notification
+    /// with the same tag is already being shown, the new notification replaces the existing
+    /// one in the notification drawer.
+    tag: Option<&'a str>,
+
+    /// The action associated with a user click on the notification. If specified, an activity
+    /// with a matching intent filter is launched when a user clicks on the notification.
+    click_action: Option<&'a str>,
+
+    /// The key to the body string in the app's string resources to use to localize the body text
+    /// to the user's current localization. See String Resources for more information.
+    body_loc_key: Option<&'a str>,
+
+    body_loc_args: Option<Vec<&'a str>>,
+
+    title_loc_key: Option<&'a str>,
+    title_loc_args: Option<Vec<&'a str>>,
+    channel_id: Option<&'a str>,
+    ticker: Option<&'a str>,
+    sticky: Option<bool>,
+    event_time: Option<&'a str>,
+    local_only: Option<bool>,
+    notification_priority: Option<Priority>,
+    default_sound: Option<bool>,
+    default_vibrate_timings: Option<bool>,
+    default_light_settings: Option<bool>,
+    vibrate_timings: Option<Vec<&'a str>>,
+    visibility: Option<Visibility>,
+    notification_count: Option<i64>,
+
+    /// Contains the URL of an image that is going to be displayed in a notification.
+    /// If present, it will override google.firebase.fcm.v1.Notification.image.
+    image: Option<&'a str>,
+
+    /// Contains the URL of an image that is going to be displayed in a notification.
+    /// If present, it will override google.firebase.fcm.v1.Notification.image.
+    bypass_proxy_notification: Option<bool>,
+
+    /// Setting to control when a notification may be proxied.
+    proxy: Option<Proxy>
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct AndroidConfig<'a> {
+    /// An identifier of a group of messages that can be collapsed, so that only the last
+    /// message gets sent when delivery can be resumed. A maximum of 4 different collapse
+    /// keys is allowed at any given time.
+    collapse_key: Option<&'a str>,
+
+    /// Message priority. Can take "normal" and "high" values.
+    priority: Option<Priority>,
+
+    /// How long (in seconds) the message should be kept in FCM storage if the device is offline.
+    /// The maximum time to live supported is 4 weeks, and the default value is 4 weeks if not set.
+    /// Set it to 0 if want to send the message immediately. In JSON format, the Duration type is
+    /// encoded as a string rather than an object, where the string ends in the suffix "s"
+    /// (indicating seconds) and is preceded by the number of seconds, with nanoseconds expressed
+    /// as fractional seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
+    /// format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON format as
+    /// "3.000000001s". The ttl will be rounded down to the nearest second.
+    ttl: Option<&'a str>,
+
+    /// Package name of the application where the registration token must match in order to
+    /// receive the message.
+    restricted_package_name: Option<&'a str>,
+
+    /// An object containing a list of "key": value pairs
+    data: Option<Value>,
+
+
+    /// If set to true, messages will be allowed to be delivered to the app while the device
+    /// is in direct boot mode.
+    direct_boot_ok: Option<bool>,
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct ApnsFcmOptions<'a> {
+    analytics_label: Option<&'a str>,
+    image: Option<&'a str>,
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct ApnsConfig<'a> {
+    headers: Option<Value>,
+    payload: Option<Value>,
+    fcm_options: Option<ApnsFcmOptions<'a>>,
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct MessageBodyV2<'a> {
+    name: Option<&'a str>,
+
+    /// Input only. Android specific options for messages sent through FCM connection server.
+    android: Option<AndroidConfig<'a>>,
+
+    apns: Option<ApnsConfig<'a>>,
+
+    topic: Option<&'a str>,
+    condition: Option<&'a str>,
+    token: Option<&'a str>
+}
+
 #[derive(Serialize, Debug, PartialEq)]
 pub struct MessageBody<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
