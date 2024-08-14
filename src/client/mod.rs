@@ -5,40 +5,42 @@ pub use crate::client::response::*;
 use crate::message::Message;
 use reqwest::header::{AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, RETRY_AFTER};
 use reqwest::{Body, StatusCode};
+use crate::MessageV2;
 
 /// An async client for sending the notification payload.
 pub struct Client {
     http_client: reqwest::Client,
     project_id: String,
+    token: String,
 }
 
 impl Default for Client {
     fn default() -> Self {
-        Self::new("".to_string())
+        Self::new("".to_string(), "".to_string())
     }
 }
 
 impl Client {
     /// Get a new instance of Client.
-    pub fn new(project_id: String) -> Client {
+    pub fn new(project_id: String, token: String) -> Client {
         let http_client = reqwest::ClientBuilder::new()
             .pool_max_idle_per_host(std::usize::MAX)
             .build()
             .unwrap();
 
-        Client { http_client, project_id }
+        Client { http_client, project_id, token }
     }
 
     /// Try sending a `Message` to FCM.
-    pub async fn send(&self, message: Message<'_>) -> Result<FcmResponse, FcmError> {
-        let payload = serde_json::to_vec(&message.body).unwrap();
+    pub async fn send(&self, message: MessageV2<'_>) -> Result<FcmResponse, FcmError> {
+        let payload = serde_json::to_vec(&message).unwrap();
 
         let request = self
             .http_client
             .post(format!("https://fcm.googleapis.com/v1/projects/{}/messages:send", self.project_id))
             .header(CONTENT_TYPE, "application/json")
             .header(CONTENT_LENGTH, format!("{}", payload.len() as u64).as_bytes())
-            .header(AUTHORIZATION, format!("Bearer {}", message.api_key).as_bytes())
+            .header(AUTHORIZATION, format!("Bearer {}", self.token).as_bytes())
             .body(Body::from(payload))
             .build()?;
         let response = self.http_client.execute(request).await?;

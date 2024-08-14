@@ -33,9 +33,11 @@ pub enum Proxy {
 pub struct NotificationV2<'a> {
 
     /// The notification's title.
+    #[serde(skip_serializing_if = "Option::is_none")]
     title: Option<&'a str>,
 
     /// The notification's body text.
+    #[serde(skip_serializing_if = "Option::is_none")]
     body: Option<&'a str>,
 
     /// Contains the URL of an image that is going to be downloaded on the device and
@@ -44,74 +46,117 @@ pub struct NotificationV2<'a> {
     /// support across platforms and platform versions. Android has 1MB image size limit.
     /// Quota usage and implications/costs for hosting image on Firebase Storage:
     /// https://firebase.google.com/pricing
+    #[serde(skip_serializing_if = "Option::is_none")]
     image: Option<&'a str>
 }
 
 pub struct LightSettings<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
     light_on_duration: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     light_off_duration: Option<&'a str>,
 }
 
 pub struct AndroidNotification<'a> { // new
     /// The notification's title.
+    #[serde(skip_serializing_if = "Option::is_none")]
     title: Option<&'a str>,
 
     /// The notification's body text. If present, it will override
     /// google.firebase.fcm.v1.Notification.body.
+    #[serde(skip_serializing_if = "Option::is_none")]
     body: Option<&'a str>,
 
     /// The notification's icon. Sets the notification icon to myicon for drawable
     /// resource myicon. If you don't send this key in the request, FCM displays the
     /// launcher icon specified in your app manifest.
+    #[serde(skip_serializing_if = "Option::is_none")]
     icon: Option<&'a str>,
 
     /// The notification's icon color, expressed in #rrggbb format.
+    #[serde(skip_serializing_if = "Option::is_none")]
     color: Option<&'a str>,
 
     /// The sound to play when the device receives the notification. Supports "default" or the
     /// filename of a sound resource bundled in the app. Sound files must reside in /res/raw/.
+    #[serde(skip_serializing_if = "Option::is_none")]
     sound: Option<&'a str>,
 
     /// Identifier used to replace existing notifications in the notification drawer. If not
     /// specified, each request creates a new notification. If specified and a notification
     /// with the same tag is already being shown, the new notification replaces the existing
     /// one in the notification drawer.
+    #[serde(skip_serializing_if = "Option::is_none")]
     tag: Option<&'a str>,
 
     /// The action associated with a user click on the notification. If specified, an activity
     /// with a matching intent filter is launched when a user clicks on the notification.
+    #[serde(skip_serializing_if = "Option::is_none")]
     click_action: Option<&'a str>,
 
     /// The key to the body string in the app's string resources to use to localize the body text
     /// to the user's current localization. See String Resources for more information.
+    #[serde(skip_serializing_if = "Option::is_none")]
     body_loc_key: Option<&'a str>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     body_loc_args: Option<Vec<&'a str>>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     title_loc_key: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     title_loc_args: Option<Vec<&'a str>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     channel_id: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     ticker: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     sticky: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     event_time: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     local_only: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     notification_priority: Option<Priority>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     default_sound: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     default_vibrate_timings: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     default_light_settings: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     vibrate_timings: Option<Vec<&'a str>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     visibility: Option<Visibility>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     notification_count: Option<i64>,
 
     /// Contains the URL of an image that is going to be displayed in a notification.
     /// If present, it will override google.firebase.fcm.v1.Notification.image.
+    #[serde(skip_serializing_if = "Option::is_none")]
     image: Option<&'a str>,
 
     /// Contains the URL of an image that is going to be displayed in a notification.
     /// If present, it will override google.firebase.fcm.v1.Notification.image.
+    #[serde(skip_serializing_if = "Option::is_none")]
     bypass_proxy_notification: Option<bool>,
 
     /// Setting to control when a notification may be proxied.
+    #[serde(skip_serializing_if = "Option::is_none")]
     proxy: Option<Proxy>
 }
 
@@ -120,9 +165,11 @@ pub struct AndroidConfig<'a> {
     /// An identifier of a group of messages that can be collapsed, so that only the last
     /// message gets sent when delivery can be resumed. A maximum of 4 different collapse
     /// keys is allowed at any given time.
+    #[serde(skip_serializing_if = "Option::is_none")]
     collapse_key: Option<&'a str>,
 
     /// Message priority. Can take "normal" and "high" values.
+    #[serde(skip_serializing_if = "Option::is_none")]
     priority: Option<Priority>,
 
     /// How long (in seconds) the message should be kept in FCM storage if the device is offline.
@@ -133,46 +180,72 @@ pub struct AndroidConfig<'a> {
     /// as fractional seconds. For example, 3 seconds with 0 nanoseconds should be encoded in JSON
     /// format as "3s", while 3 seconds and 1 nanosecond should be expressed in JSON format as
     /// "3.000000001s". The ttl will be rounded down to the nearest second.
+    #[serde(skip_serializing_if = "Option::is_none")]
     ttl: Option<&'a str>,
 
     /// Package name of the application where the registration token must match in order to
     /// receive the message.
+    #[serde(skip_serializing_if = "Option::is_none")]
     restricted_package_name: Option<&'a str>,
 
     /// An object containing a list of "key": value pairs
+    #[serde(skip_serializing_if = "Option::is_none")]
     data: Option<Value>,
 
 
     /// If set to true, messages will be allowed to be delivered to the app while the device
     /// is in direct boot mode.
+    #[serde(skip_serializing_if = "Option::is_none")]
     direct_boot_ok: Option<bool>,
 }
 
 #[derive(Serialize, Debug, PartialEq)]
 pub struct ApnsFcmOptions<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
     analytics_label: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     image: Option<&'a str>,
 }
 
 #[derive(Serialize, Debug, PartialEq)]
 pub struct ApnsConfig<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
     headers: Option<Value>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     payload: Option<Value>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     fcm_options: Option<ApnsFcmOptions<'a>>,
 }
 
 #[derive(Serialize, Debug, PartialEq)]
 pub struct MessageBodyV2<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<&'a str>,
 
-    /// Input only. Android specific options for messages sent through FCM connection server.
+    #[serde(skip_serializing_if = "Option::is_none")]
     android: Option<AndroidConfig<'a>>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     apns: Option<ApnsConfig<'a>>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     topic: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     condition: Option<&'a str>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     token: Option<&'a str>
+}
+
+#[derive(Serialize, Debug, PartialEq)]
+pub struct MessageV2<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    validate_only: Option<bool>,
+    message: MessageBodyV2<'a>,
 }
 
 #[derive(Serialize, Debug, PartialEq)]
