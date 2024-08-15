@@ -324,6 +324,13 @@ pub struct Message<'a> {
 #[derive(Debug)]
 pub struct MessageBuilder<'a> {
     api_key: &'a str,
+    /// target
+    token: Option<&'a str>,
+    topic: Option<&'a str>,
+    condition: Option< &'a str>,
+    /// end target
+    validate_only: Option<bool>,
+    name: Option<&'a str>,
     collapse_key: Option<&'a str>,
     content_available: Option<bool>,
     data: Option<Value>,
@@ -333,7 +340,7 @@ pub struct MessageBuilder<'a> {
     priority: Option<Priority>,
     registration_ids: Option<Vec<Cow<'a, str>>>,
     restricted_package_name: Option<&'a str>,
-    time_to_live: Option<i32>,
+    time_to_live: Option<&'a str>,
     to: Option<&'a str>,
     mutable_content: Option<bool>,
 }
@@ -343,6 +350,10 @@ impl<'a> MessageBuilder<'a> {
     pub fn new(api_key: &'a str, to: &'a str) -> Self {
         MessageBuilder {
             api_key,
+            token: None,
+            topic: None,
+            condition: None,
+            validate_only: None,
             to: Some(to),
             registration_ids: None,
             collapse_key: None,
@@ -355,6 +366,7 @@ impl<'a> MessageBuilder<'a> {
             data: None,
             notification: None,
             mutable_content: None,
+            name: None,
         }
     }
 
@@ -367,6 +379,10 @@ impl<'a> MessageBuilder<'a> {
 
         MessageBuilder {
             api_key,
+            token: None,
+            topic: None,
+            condition: None,
+            validate_only: None,
             to: None,
             registration_ids: Some(converted),
             collapse_key: None,
@@ -379,6 +395,7 @@ impl<'a> MessageBuilder<'a> {
             data: None,
             notification: None,
             mutable_content: None,
+            name: None,
         }
     }
 
@@ -427,7 +444,7 @@ impl<'a> MessageBuilder<'a> {
 
     /// How long (in seconds) to keep the message on FCM servers in case the device
     /// is offline. The maximum and default is 4 weeks.
-    pub fn time_to_live(&mut self, time_to_live: i32) -> &mut Self {
+    pub fn time_to_live(&mut self, time_to_live: &'a str) -> &mut Self {
         self.time_to_live = Some(time_to_live);
         self
     }
@@ -490,23 +507,38 @@ impl<'a> MessageBuilder<'a> {
         self
     }
 
-    /// Complete the build and get a `Message` instance
-    pub fn finalize(self) -> Message<'a> {
-        Message {
-            api_key: self.api_key,
-            body: MessageBody {
-                to: self.to,
-                registration_ids: self.registration_ids,
-                collapse_key: self.collapse_key,
-                priority: self.priority,
-                content_available: self.content_available,
-                delay_while_idle: self.delay_while_idle,
-                time_to_live: self.time_to_live,
-                restricted_package_name: self.restricted_package_name,
-                dry_run: self.dry_run,
-                data: self.data.clone(),
-                notification: self.notification,
-                mutable_content: self.mutable_content,
+    pub fn topic(&mut self, topic: &'a str) -> &mut Self {
+        self.topic = Some(topic);
+        self
+    }
+
+    pub fn token(&mut self, token: &'a str) -> &mut Self {
+        self.token = Some(token);
+        self
+    }
+
+    pub fn condition(&mut self, condition: &'a str) -> &mut Self {
+        self.condition = Some(condition);
+        self
+    }
+    
+    pub fn finalize(self) -> MessageV2<'a> {
+        MessageV2 {
+            validate_only: self.validate_only,
+            message: MessageBodyV2 {
+                name: self.name,
+                android: Some(AndroidConfig{
+                    priority: self.priority,
+                    collapse_key: self.collapse_key,
+                    data: self.data.clone(),
+                    ttl: self.time_to_live,
+                    restricted_package_name: self.restricted_package_name,
+                    direct_boot_ok: Some(false),
+                }),
+                apns: None,
+                topic: self.topic,
+                token: self.to,
+                condition: self.condition,
             },
         }
     }
