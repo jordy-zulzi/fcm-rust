@@ -5,7 +5,6 @@ pub use crate::client::response::*;
 use crate::message::Message;
 use reqwest::header::{AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, RETRY_AFTER};
 use reqwest::{Body, StatusCode};
-use crate::Message;
 
 /// An async client for sending the notification payload.
 pub struct Client {
