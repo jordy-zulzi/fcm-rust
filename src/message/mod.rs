@@ -3,7 +3,7 @@ use std::borrow::Cow;
 use serde::Serialize;
 use serde_json::Value;
 
-use crate::notification::Notification;
+use crate::notification::NotificationV1;
 
 #[cfg(test)]
 mod tests;
@@ -34,7 +34,7 @@ pub enum Proxy {
 }
 
 #[derive(Serialize, Debug, PartialEq)]
-pub struct NotificationV2<'a> {
+pub struct Notification<'a> {
 
     /// The notification's title.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -227,7 +227,7 @@ pub struct ApnsConfig<'a> {
 }
 
 #[derive(Serialize, Debug, PartialEq)]
-pub struct MessageBodyV2<'a> {
+pub struct MessageBody<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<&'a str>,
 
@@ -248,65 +248,10 @@ pub struct MessageBodyV2<'a> {
 }
 
 #[derive(Serialize, Debug, PartialEq)]
-pub struct MessageV2<'a> {
+pub struct Message<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     validate_only: Option<bool>,
-    message: MessageBodyV2<'a>,
-}
-
-#[derive(Serialize, Debug, PartialEq)]
-pub struct MessageBody<'a> {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    collapse_key: Option<&'a str>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    content_available: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    data: Option<Value>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    delay_while_idle: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    dry_run: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    notification: Option<Notification<'a>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    priority: Option<Priority>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    registration_ids: Option<Vec<Cow<'a, str>>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    restricted_package_name: Option<&'a str>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    time_to_live: Option<i32>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    to: Option<&'a str>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    mutable_content: Option<bool>,
-}
-
-/// Represents a FCM message. Construct the FCM message
-/// using various utility methods and finally send it.
-/// # Examples:
-/// ```rust
-/// use fcm::MessageBuilder;
-///
-/// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
-/// builder.dry_run(true);
-/// let message = builder.finalize();
-/// ```
-#[derive(Debug)]
-pub struct Message<'a> {
-    pub api_key: &'a str,
-    pub body: MessageBody<'a>,
+    message: MessageBody<'a>,
 }
 
 ///
@@ -336,7 +281,7 @@ pub struct MessageBuilder<'a> {
     data: Option<Value>,
     delay_while_idle: Option<bool>,
     dry_run: Option<bool>,
-    notification: Option<Notification<'a>>,
+    notification: Option<NotificationV1<'a>>,
     priority: Option<Priority>,
     registration_ids: Option<Vec<Cow<'a, str>>>,
     restricted_package_name: Option<&'a str>,
@@ -493,10 +438,10 @@ impl<'a> MessageBuilder<'a> {
     /// let notification = builder.finalize();
     ///
     /// let mut builder = MessageBuilder::new("<FCM API Key>", "<registration id>");
-    /// builder.notification(notification);
+    ///
     /// let message = builder.finalize();
     /// ```
-    pub fn notification(&mut self, notification: Notification<'a>) -> &mut Self {
+    pub fn notification(&mut self, notification: NotificationV1<'a>) -> &mut Self {
         self.notification = Some(notification);
         self
     }
@@ -522,10 +467,10 @@ impl<'a> MessageBuilder<'a> {
         self
     }
     
-    pub fn finalize(self) -> MessageV2<'a> {
-        MessageV2 {
+    pub fn finalize(self) -> Message<'a> {
+        Message {
             validate_only: self.validate_only,
-            message: MessageBodyV2 {
+            message: MessageBody {
                 name: self.name,
                 android: Some(AndroidConfig{
                     priority: self.priority,

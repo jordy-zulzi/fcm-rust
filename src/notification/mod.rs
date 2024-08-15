@@ -8,7 +8,7 @@ mod tests;
 /// corresponding `NotificationBuilder` to get an instance. You can then use
 /// this notification instance when sending a FCM message.
 #[derive(Serialize, Debug, PartialEq)]
-pub struct Notification<'a> {
+pub struct NotificationV1<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     badge: Option<&'a str>,
 
@@ -166,8 +166,8 @@ impl<'a> NotificationBuilder<'a> {
     }
 
     /// Complete the build and get a `Notification` instance
-    pub fn finalize(self) -> Notification<'a> {
-        Notification {
+    pub fn finalize(self) -> NotificationV1<'a> {
+        NotificationV1 {
             title: self.title,
             body: self.body,
             icon: self.icon,

@@ -5,7 +5,7 @@ pub use crate::client::response::*;
 use crate::message::Message;
 use reqwest::header::{AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, RETRY_AFTER};
 use reqwest::{Body, StatusCode};
-use crate::MessageV2;
+use crate::Message;
 
 /// An async client for sending the notification payload.
 pub struct Client {
@@ -32,7 +32,7 @@ impl Client {
     }
 
     /// Try sending a `Message` to FCM.
-    pub async fn send(&self, message: MessageV2<'_>) -> Result<FcmResponse, FcmError> {
+    pub async fn send(&self, message: Message<'_>) -> Result<FcmResponse, FcmError> {
         let payload = serde_json::to_vec(&message).unwrap();
 
         let request = self
